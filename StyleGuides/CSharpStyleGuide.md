@@ -11,12 +11,13 @@ Se especifican a continuación puntos a sobreescribir o que faltan en el estanda
 - Deben usarse los tipos de excepción especificos siempre que sea posible.
 
 Ejemplo:
-´´´c#
+
+```c#
 public void ThrowError() {
   try {
     int i = 1/0;
   } catch (DivideByZeroException err) {
-    \_logger.err(err);
+    _logger.err(err);
   }
 }
-´´´
+```
