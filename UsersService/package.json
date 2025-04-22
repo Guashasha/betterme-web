@@ -1,0 +1,14 @@
+{
+  "name": "users-service",
+  "version": "1.0.0",
+  "description": "API with operations for users",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "BetterDevs",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
