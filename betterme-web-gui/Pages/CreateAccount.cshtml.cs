@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace betterme_web_gui.Pages;
 
-public class IndexModel : PageModel
+public class CreateAccountModel : PageModel
 {
-    private readonly ILogger<IndexModel> _logger;
+    private readonly ILogger<CreateAccountModel> _logger;
 
-    public IndexModel(ILogger<IndexModel> logger)
+    public CreateAccountModel(ILogger<CreateAccountModel> logger)
     {
         _logger = logger;
     }
