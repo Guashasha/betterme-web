@@ -7,8 +7,59 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/betterme_web_gui.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 </head>
 <body>
+<header>
+<nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <div class="container-fluid d-flex align-items-center">
+        
+        <!-- Left: Hamburger + Logo -->
+        <button class="btn btn-success me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <img src="/Images/BetterMe-logo.png" class="img-fluid me-4" style="max-height: 40px;" alt="BetterMe logo">
+
+        <!-- Nav menu right after logo -->
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav d-flex flex-row gap-3">
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-page="/Index">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-page="/Cursos/Cursos">Perfil</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-page="/Profesores/Profesores">Estadísticas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-page="/Participantes/Participantes">Nueva Publicación</a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</nav>
+
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+  <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasMenuLabel">Menú</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ul class="list-unstyled">
+      <li><a href="/Profile" class="nav-link">Perfil</a></li>
+      <li><a href="/Rutinas" class="nav-link">Rutinas</a></li>
+      <li><a href="/Progress" class="nav-link">Progreso</a></li>
+      <li><a href="/Logout" class="nav-link text-danger">Cerrar sesión</a></li>
+    </ul>
+    </div>
+  </div>
+</div>
+
     <div class="container-fluid">
         @RenderBody()
     </div>

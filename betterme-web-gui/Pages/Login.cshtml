@@ -1,6 +1,7 @@
 ﻿@page
 @model LoginModel
 @{
+    Layout = "_LoginLayout";
     ViewData["Title"] = "BetterMe login";
 }
 
@@ -38,7 +39,7 @@
         </div>
         <div class="row text-center justify-content-center ">
             <div clase="col">
-                <button type="button" class="btn btn-link" onclick="window.location.href='/CreateAccount'">Crear cuenta</button>
+                <button type="button" class="btn btn-link" onclick="window.location.href='/UserInfo'">Crear cuenta</button>
             </div>
         </div>
     </div>
