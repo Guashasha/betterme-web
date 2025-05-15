@@ -14,6 +14,11 @@ builder.Services.AddHttpClient<UsersApi>(c =>
     c.BaseAddress = new Uri("http://localhost:6969/api/");
 });
 
+builder.Services.AddHttpClient("AuthProxy", c =>
+{
+    c.BaseAddress = new Uri("http://localhost:6968/");
+});
+
 // 🏗 2. Then build
 var app = builder.Build();
 
@@ -23,6 +28,16 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
+
+app.MapPost("/auth/login", async (HttpContext ctx, IHttpClientFactory factory) =>
+{
+    var client = factory.CreateClient("AuthProxy");
+    var response = await client.PostAsJsonAsync("api/authentication/login",
+        await ctx.Request.ReadFromJsonAsync<object>());
+
+    ctx.Response.StatusCode = (int)response.StatusCode;
+    await response.Content.CopyToAsync(ctx.Response.Body);
+});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

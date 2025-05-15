@@ -22,19 +22,19 @@
         </div>
         <div class="row justify-content-center p-3">
             <div class="col">
-                <label for="emailInput" class="form-label">Correo</label>
-                <input type="email" class="form-control" id="emailInput" placeholder="name@example.com">
+                <label for="emailInput" class="form-label">Nombre de Usuario</label>
+                <input type="text" class="form-control" id="txtUsername" placeholder="pepito123...">
             </div>
         </div>
         <div class="row justify-content-center p-3">
             <div class="col">
                 <label for="passwordInput" class="form-label">Contraseña</label>
-                <input type="password" id="passwordInput" class="form-control">
+                <input type="password" id="pwdPassword" class="form-control">
             </div>
         </div>
         <div class="row text-center justify-content-center p-3">
             <div class="col">
-                <button type="button" class="btn btn-primary">Iniciar sesión</button>
+                <button type="button" class="btn btn-primary" onclick="loginUser()">Iniciar sesión</button>
             </div>
         </div>
         <div class="row text-center justify-content-center ">
@@ -47,3 +47,7 @@
         
     </div>
 </div>
+
+@section Scripts {
+  <script src="~/js/login.js"></script>
+}
