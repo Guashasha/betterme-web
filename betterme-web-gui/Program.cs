@@ -1,53 +1,68 @@
 using System.Text.Json;
-using BetterMe.WebGui.Services; //  ⇠  make sure UsersApi namespace is imported
+using Microsoft.AspNetCore.Routing;      
+using BetterMe.WebGui.Services;
+using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 🔌 1. Register every service first
+// 1️⃣ Register services
 builder.Services
     .AddRazorPages()
     .AddJsonOptions(o =>
         o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
 
 builder.Services.AddHttpClient<UsersApi>(c =>
-{
-    c.BaseAddress = new Uri("http://localhost:6969/api/");
-});
+    c.BaseAddress = new Uri("http://localhost:6969/api/")
+);
 
 builder.Services.AddHttpClient("AuthProxy", c =>
-{
-    c.BaseAddress = new Uri("http://localhost:6968/");
-});
+    c.BaseAddress = new Uri("http://localhost:6968/")
+);
 
-// 🏗 2. Then build
+builder.Services.AddHttpClient("UsersProxy", c =>
+    c.BaseAddress = new Uri("http://localhost:6969/")
+);
+
 var app = builder.Build();
 
-// 🌐 3. Middleware pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
 
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseAuthorization();
+
+//Guys this mapPost shits are like mmm contexts for the JS Scripts to like know where and wich api is calling
+
 app.MapPost("/auth/login", async (HttpContext ctx, IHttpClientFactory factory) =>
 {
-    var client = factory.CreateClient("AuthProxy");
-    var response = await client.PostAsJsonAsync("api/authentication/login",
-        await ctx.Request.ReadFromJsonAsync<object>());
-
+    var payload = await ctx.Request.ReadFromJsonAsync<object>();
+    var client  = factory.CreateClient("AuthProxy");
+    var response = await client.PostAsJsonAsync("api/authentication/login", payload);
     ctx.Response.StatusCode = (int)response.StatusCode;
     await response.Content.CopyToAsync(ctx.Response.Body);
 });
 
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseAuthorization();
+app.MapPost("/users", async (HttpContext ctx, IHttpClientFactory factory) =>
+{
+    var client = factory.CreateClient("UsersProxy");
+    var forward = new HttpRequestMessage(HttpMethod.Post, "api/users")
+    {
+        Content = new StreamContent(ctx.Request.Body)
+    };
+    forward.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+    var response = await client.SendAsync(forward, ctx.RequestAborted);
+    ctx.Response.StatusCode = (int)response.StatusCode;
+    await response.Content.CopyToAsync(ctx.Response.Body);
+});
 
 app.MapRazorPages();
 
-app.MapFallbackToPage("/Login");
+app.MapFallbackToPage("/Login")
+   .WithMetadata(new HttpMethodMetadata(new[] { "GET" }));
 
 app.Run();
