@@ -37,7 +37,6 @@ app.UseRouting();
 app.UseAuthorization();
 
 //Guys this mapPost shits are like mmm contexts for the JS Scripts to like know where and wich api is calling
-
 app.MapPost("/auth/login", async (HttpContext ctx, IHttpClientFactory factory) =>
 {
     var payload = await ctx.Request.ReadFromJsonAsync<object>();
@@ -59,6 +58,9 @@ app.MapPost("/users", async (HttpContext ctx, IHttpClientFactory factory) =>
     ctx.Response.StatusCode = (int)response.StatusCode;
     await response.Content.CopyToAsync(ctx.Response.Body);
 });
+
+// IMPORTANT !!
+//Still missing the logic to "restrict" users to going to pages that they are not authorized, like for they to not put on the nav search bar like https://localhost/UserInfo 
 
 app.MapRazorPages();
 
