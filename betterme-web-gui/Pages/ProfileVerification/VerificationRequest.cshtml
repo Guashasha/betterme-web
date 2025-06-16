@@ -21,7 +21,7 @@
                 </div>
             </div>
                          
-            <form class="vstack gap-2 needs-validation" id="verificationRequestForm" novalidate>
+            <form class="vstack gap-2 needs-validation" id="verificationRequestForm" novalidate enctype="multipart/form-data">
                 <div class="mb-3" >
                     <label for="identification" class="form-label fw-bold">Identificación oficial:</label>
                     <p class="fw-light">
@@ -37,7 +37,7 @@
                         Se acepta titulo universitario, certificado de curso o constancia emitidos por una institución reconocida.
                         El archivo debe tener la extensión .pdf
                     </p>
-                    <input class="form-control" type="file" id="certificate" name="certificate" accept=".pdf" required>
+                    <input class="form-control" type="file" id="certificate" name="certificate" accept=".jpg, .jpeg, .png" required>
                     <div class="invalid-feedback">Es obligatorio subir un documento probatorio</div>
                 </div>
                 <div class="row justify-content-center p-3">

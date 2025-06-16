@@ -1,5 +1,6 @@
 using betterme_web_gui.DTOS;
 using System.Net;
+using System.Net.Http.Headers;
 
 namespace betterme_web_gui.Services
 {
@@ -16,15 +17,28 @@ namespace betterme_web_gui.Services
             _logger = logger;
         }
 
-        public async Task<Response<VerificationRequestDTO>> AddVerificationRequest(VerificationRequestDTO verificationRequest)
+        public async Task<Response<VerificationRequestDTO>> AddVerificationRequest(VerificationRequestDTO request)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _token);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
             HttpResponseMessage httpResponse;
             Response<VerificationRequestDTO> response = new();
+            
+            using var form = new MultipartFormDataContent();            
+            using var certificateStream = request.Certificate.OpenReadStream();
+            using var identificationStream = request.Identification.OpenReadStream();
+
+            var certificateContent = new StreamContent(certificateStream);
+            certificateContent.Headers.ContentType = new MediaTypeHeaderValue(request.Certificate.ContentType);
+
+            var identificationContent = new StreamContent(identificationStream);
+            identificationContent.Headers.ContentType = new MediaTypeHeaderValue(request.Identification.ContentType);
+
+            form.Add(certificateContent, "certificate", request.Certificate.FileName);
+            form.Add(identificationContent, "identification", request.Identification.FileName);
 
             try
             {
-                httpResponse = await _httpClient.PostAsJsonAsync("", verificationRequest);
+                httpResponse = await _httpClient.PostAsync("", form);
             }
             catch (HttpRequestException error)
             {
