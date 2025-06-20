@@ -26,8 +26,8 @@ async function loginUser() {
 
     const { accessToken } = await res.json();
 
-    document.cookie = `accessToken=${accessToken}; path=/; secure`;
-    window.location.href = '/UserInfo';
+    document.cookie = `accessToken=${accessToken}; path=/; SameSite=Lax`;
+    window.location.href = '/NewPost';
   } catch (err) {
     console.error(err);
     alert('No se pudo conectar al servidor');

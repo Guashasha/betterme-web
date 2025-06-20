@@ -1,9 +1,11 @@
 using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Routing;      
 using BetterMe.WebGui.Services;
 using System.Net.Http.Headers;
 using betterme_web_gui.Services;
 using System.ComponentModel;
+using static MultimediaService.MultimediaService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +46,11 @@ builder.Services.AddHttpClient("VerificationRequestsAPI", client =>
 });
 
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddGrpcClient<MultimediaServiceClient>(o =>
+{
+  o.Address = new Uri("http://localhost:6979");
+});
 
 var app = builder.Build();
 
