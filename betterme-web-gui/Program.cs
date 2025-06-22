@@ -45,8 +45,15 @@ builder.Services.AddHttpClient("VerificationRequestsAPI", client =>
     client.BaseAddress = new Uri(builder.Configuration["API:VerificationRequestsUrl"]);
 });
 
+builder.Services
+       .AddHttpClient("PostsApi", client =>
+       {
+           client.BaseAddress = new Uri("http://localhost:5017");
+       });
+
 builder.Services.AddHttpContextAccessor();
 
+//This shi the DI for the GRPC Client
 builder.Services.AddGrpcClient<MultimediaServiceClient>(o =>
 {
   o.Address = new Uri("http://localhost:6979");

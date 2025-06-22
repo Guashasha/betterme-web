@@ -27,7 +27,7 @@ async function loginUser() {
     const { accessToken } = await res.json();
 
     document.cookie = `accessToken=${accessToken}; path=/; SameSite=Lax`;
-    window.location.href = '/NewPost';
+    window.location.href = '/FeedMenu';
   } catch (err) {
     console.error(err);
     alert('No se pudo conectar al servidor');

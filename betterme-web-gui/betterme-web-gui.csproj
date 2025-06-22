@@ -8,7 +8,6 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <!-- generate C# classes + a typed client -->
     <Protobuf Include="protos/multimedia.proto"
               GrpcServices="Client" />
   </ItemGroup>
