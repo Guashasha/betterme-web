@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MultimediaService;
 using BetterMe.WebGui.Classes;
+using Grpc.Core;
 
 namespace MyApp.Namespace
 {
@@ -20,47 +21,58 @@ namespace MyApp.Namespace
             _grpc = grpc;
         }
 
-            public async Task OnGetAsync(string? category)
-            {
-                var client = _http.CreateClient("PostsApi");
-                var url = string.IsNullOrEmpty(category)
+        public async Task OnGetAsync(string? category)
+        {
+            var postsClient = _http.CreateClient("PostsApi");
+            var usersClient = _http.CreateClient("UsersApi");
+
+            var url = string.IsNullOrEmpty(category)
                 ? "posts"
                 : $"posts?category={Uri.EscapeDataString(category)}";
 
-                var posts = await client.GetFromJsonAsync<List<PostDto>>(url)
-                            ?? new List<PostDto>();
+            var posts = await postsClient.GetFromJsonAsync<List<PostDto>>(url)
+                        ?? new();
 
-                //for each post stream the image via gRPC and base64‐ify it
-                foreach (var p in posts)
+            foreach (var p in posts)
+            {
+                var ms = new MemoryStream();
+                using var call = _grpc.GetPostMultimedia(new PostInfo { Id = p.Id });
+                while (await call.ResponseStream.MoveNext())
+                    call.ResponseStream.Current.Chunk.WriteTo(ms);
+
+                // GET /users/{id}
+                Console.WriteLine($"⟳ Fetching user info for {p.UserId}");
+                var userDto = await usersClient
+                    .GetFromJsonAsync<UserDto>($"users/{p.UserId}");
+
+                Posts.Add(new FeedItem
                 {
-                    var ms = new MemoryStream();
-                    using var call = _grpc.GetPostMultimedia(new PostInfo { Id = p.Id });
-                    while (await call.ResponseStream.MoveNext(CancellationToken.None))
-                    {
-                        var chunk = call.ResponseStream.Current;
-                        chunk.Chunk.WriteTo(ms);
-                    }
-                    var dataUrl = "data:image/jpeg;base64," +
-                        Convert.ToBase64String(ms.ToArray());
+                    Id = p.Id,
+                    Title = p.Title,
+                    Description = p.Description,
+                    Category = p.Category,
+                    ImageDataUrl = "data:image/jpeg;base64," + Convert.ToBase64String(ms.ToArray()),
 
-                    Posts.Add(new FeedItem
-                    {
-                        Id = p.Id,
-                        Title = p.Title,
-                        Description = p.Description,
-                        Category = p.Category,
-                        ImageDataUrl = dataUrl
-                    });
-                }
+                    UserName = userDto?.Account?.Username ?? "Unknown",
+                    IsVerified = userDto?.Verified ?? false
+                });
             }
+        }
 
         public class PostDto
         {
-            public string Id          { get; set; }
-            public string Title       { get; set; }
+            public string Id { get; set; }
+            public string Title { get; set; }
             public string Description { get; set; }
-            public string Category    { get; set; }
+            public string Category { get; set; }
+            public string UserId { get; set; }
         }
     
+        private class UserDto
+        {
+            public bool Verified { get; set; }
+            public AccountDto Account { get; set; } = new();
+            public class AccountDto { public string Username { get; set; } = ""; }
+        }
     }
 }

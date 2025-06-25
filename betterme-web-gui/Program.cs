@@ -40,6 +40,15 @@ builder.Services.AddHttpClient("UsersProxy", c =>
     c.BaseAddress = new Uri("http://localhost:6969/")
 );
 
+builder.Services.AddHttpClient("UsersApi", c =>
+{
+    c.BaseAddress = new Uri("http://localhost:6969/api/");
+});
+
+builder.Services.AddHttpClient("ReportsApi", c =>
+  c.BaseAddress = new Uri("http://localhost:7072")
+);
+
 builder.Services.AddHttpClient("VerificationRequestsAPI", client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["API:VerificationRequestsUrl"]);
@@ -83,6 +92,22 @@ app.MapPost("/auth/login", async (HttpContext ctx, IHttpClientFactory factory) =
     ctx.Session.SetString("token",token);
 
     await response.Content.CopyToAsync(ctx.Response.Body);
+});
+
+app.MapPost("/reports", async (HttpContext ctx, IHttpClientFactory http) =>
+{
+  // read the incoming JSON & the auth cookie
+  var payload = await ctx.Request.ReadFromJsonAsync<object>();
+  if (!ctx.Request.Cookies.TryGetValue("accessToken", out var token))
+    return Results.Unauthorized();
+
+  var client = http.CreateClient("ReportsApi");
+  client.DefaultRequestHeaders.Authorization =
+    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+  // forward
+  var response = await client.PostAsJsonAsync("/reports", payload);
+  return Results.StatusCode((int)response.StatusCode);
 });
 
 app.MapPost("/users", async (HttpContext ctx, IHttpClientFactory factory) =>

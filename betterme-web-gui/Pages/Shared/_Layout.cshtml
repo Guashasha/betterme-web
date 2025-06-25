@@ -1,4 +1,26 @@
-﻿<!DOCTYPE html>
+﻿@using System.IdentityModel.Tokens.Jwt
+@using MyApp.Helpers
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    string? profileUserId = null;
+
+    if (HttpContextAccessor.HttpContext?.Request.Cookies.TryGetValue("accessToken", out var rawToken) ?? false)
+    {
+        try
+        {
+            var jwt = JwtUtils.ValidateAndDecode(rawToken);
+            profileUserId = jwt.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+        }
+        catch
+        {
+            profileUserId = null;
+        }
+    }
+}
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -22,7 +44,8 @@
 
             <img src="/Images/BetterMe-logo.png" class="img-fluid me-4" style="max-height: 40px;" alt="BetterMe logo">
 
-            <a href="/UserInfo" class="btn btn-outline-secondary">
+            <a href="@(profileUserId is not null? $"/Profile/{profileUserId}": "/Login")"
+                class="btn btn-outline-secondary">
                 <i class="bi bi-person-circle"></i>
                 Perfil
             </a>
