@@ -96,7 +96,6 @@ app.MapPost("/auth/login", async (HttpContext ctx, IHttpClientFactory factory) =
 
 app.MapPost("/reports", async (HttpContext ctx, IHttpClientFactory http) =>
 {
-  // read the incoming JSON & the auth cookie
   var payload = await ctx.Request.ReadFromJsonAsync<object>();
   if (!ctx.Request.Cookies.TryGetValue("accessToken", out var token))
     return Results.Unauthorized();
@@ -105,7 +104,6 @@ app.MapPost("/reports", async (HttpContext ctx, IHttpClientFactory http) =>
   client.DefaultRequestHeaders.Authorization =
     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-  // forward
   var response = await client.PostAsJsonAsync("/reports", payload);
   return Results.StatusCode((int)response.StatusCode);
 });

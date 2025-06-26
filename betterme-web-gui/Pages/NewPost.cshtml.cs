@@ -4,20 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
-using Grpc.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.IdentityModel.Tokens.Jwt;
 using MultimediaService;
-using MyApp.Helpers;
 
 namespace MyApp.Namespace
 {
     public class NewPostModel : PageModel
     {
         private readonly MultimediaService.MultimediaService.MultimediaServiceClient _grpc;
-
-        public string UserIdToken { get; private set; } = "";
 
         [BindProperty] public string Title       { get; set; } = "";
         [BindProperty] public string Description { get; set; } = "";
@@ -32,60 +29,42 @@ namespace MyApp.Namespace
         public async Task<IActionResult> OnPostAsync()
         {
             if (!Request.Cookies.TryGetValue("accessToken", out var token))
-            {
-                Console.WriteLine("No cookie sent, redirecting to Login");
                 return RedirectToPage("/Login");
-            }
-            Console.WriteLine($"Got cookie: {token.Substring(0,10)}…");
-            try
-            {
-                Console.WriteLine(" Validating token…");
-                var jwt = JwtUtils.ValidateAndDecode(token);
-                Console.WriteLine("Token valid. Claims:");
-                foreach (var c in jwt.Claims)
-                    Console.WriteLine($"   • {c.Type} = {c.Value}");
 
-                var id = jwt.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-                Console.WriteLine($"Extracted id = '{id}'");
-                if (string.IsNullOrEmpty(id))
-                {
-                    return RedirectToPage("/Login");
-                }
+            var handler = new JwtSecurityTokenHandler();
+            handler.InboundClaimTypeMap.Clear();
+            var jwt = handler.ReadJwtToken(token);
 
-                UserIdToken = id;
-            }
-            catch (Exception ex)
-            {
-                // Response.Cookies.Delete("accessToken");
+            var userId = jwt.Claims
+                           .FirstOrDefault(c => c.Type == "id" || c.Type == "sub")
+                           ?.Value;
+            if (string.IsNullOrEmpty(userId))
                 return RedirectToPage("/Login");
-            }
 
             var createReq = new Post
             {
                 Title       = Title,
                 Description = Description,
                 Category    = Category,
-                UserId      = UserIdToken,
+                UserId      = userId,
                 TimeStamp   = Timestamp.FromDateTime(DateTime.UtcNow),
                 Status      = "Published"
             };
-            Post created = await _grpc.CreatePostAsync(createReq);
+            var created = await _grpc.CreatePostAsync(createReq);
 
             if (FileUpload is { Length: > 0 })
             {
                 using var call = _grpc.UploadPostMultimedia();
+                var ext      = Path.GetExtension(FileUpload.FileName).TrimStart('.');
+                var buffer   = new byte[64 * 1024];
 
-                var resourceId = created.Id;
-                var ext        = Path.GetExtension(FileUpload.FileName).TrimStart('.');
-
-                using var fs = FileUpload.OpenReadStream();
-                var buffer = new byte[64 * 1024];
+                await using var fs = FileUpload.OpenReadStream();
                 int bytesRead;
                 while ((bytesRead = await fs.ReadAsync(buffer, 0, buffer.Length)) > 0)
                 {
                     await call.RequestStream.WriteAsync(new FileChunk
                     {
-                        ResourceId = resourceId,
+                        ResourceId = created.Id,
                         Ext        = ext,
                         Chunk      = ByteString.CopyFrom(buffer, 0, bytesRead)
                     });

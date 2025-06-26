@@ -6,6 +6,7 @@ using MultimediaService;
 using BetterMe.WebGui.Classes;
 using System.Net.Http.Json;
 using Grpc.Core;
+using MyApp.Helpers;
 
 namespace MyApp.Namespace{
 
@@ -17,6 +18,7 @@ public class ProfileModel : PageModel
     public string? Error { get; private set; }
     public UserDto? User { get; private set; }
     public string ProfileImageUrl { get; private set; } = "/images/defaultpfp.jpg";
+     public string? CurrentUsername { get; private set; }
     public List<FeedItem> Posts { get; } = new();
 
     public ProfileModel(IHttpClientFactory http,
@@ -28,11 +30,27 @@ public class ProfileModel : PageModel
 
     public async Task OnGetAsync(string id)
     {
+        if (Request.Cookies.TryGetValue("accessToken", out var token))
+        {
+            try
+            {
+            var jwt = JwtUtils.ValidateAndDecode(token);
+            CurrentUsername = jwt.Claims.FirstOrDefault(c => c.Type == "username")?.Value;
+            Console.WriteLine(CurrentUsername);
+                
+            }
+            catch
+            {
+                CurrentUsername = null;
+            }
+        }
+
         if (string.IsNullOrWhiteSpace(id))
         {
             Error = "Missing user id.";
             return;
         }
+
         var usersClient = _http.CreateClient("UsersApi");
         var userResp = await usersClient.GetAsync($"users/{id}");
         if (userResp.StatusCode == System.Net.HttpStatusCode.NotFound)

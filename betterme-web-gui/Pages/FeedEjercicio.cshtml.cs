@@ -41,7 +41,6 @@ namespace MyApp.Namespace
                     call.ResponseStream.Current.Chunk.WriteTo(ms);
 
                 // GET /users/{id}
-                Console.WriteLine($"⟳ Fetching user info for {p.UserId}");
                 var userDto = await usersClient
                     .GetFromJsonAsync<UserDto>($"users/{p.UserId}");
 

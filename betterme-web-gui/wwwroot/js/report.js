@@ -16,7 +16,7 @@
     try {
       const res = await fetch("http://localhost:7072/reports", {
         method: "POST",
-        mode: "cors",                   // because you're cross-origin now
+        mode: "cors",                   
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`

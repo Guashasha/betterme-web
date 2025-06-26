@@ -1,0 +1,57 @@
+﻿@page "/SearchUsers"
+@model MyApp.Namespace.SearchUsersModel
+
+@section Scripts {
+  <script src="https://cdn.tailwindcss.com"></script>
+}
+
+<div class="container mx-auto py-8">
+  <form method="get" class="flex mb-6">
+    <input
+    name="Query"
+    value="@Model.Query"
+    placeholder="Buscar usuarios…"
+    class="flex-1 px-4 py-2 border rounded-l-lg focus:outline-none"
+    />
+    <button
+      type="submit"
+      class="bg-blue-600 text-white px-4 rounded-r-lg hover:bg-blue-700"
+    >
+      Buscar
+    </button>
+  </form>
+
+  @if (!string.IsNullOrWhiteSpace(Model.Query) && !Model.Results.Any())
+  {
+    <p class="text-gray-500">No se encontraron usuarios para “@Model.Query”.</p>
+  }
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    @foreach (var u in Model.Results)
+    {
+      <a href="/Profile/@u.Id"
+         class="flex items-center space-x-4 p-4 border rounded-lg hover:shadow-lg transition">
+        <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-100">
+          <img src="@u.ImageDataUrl"
+               alt="@u.UserName"
+               class="object-cover w-full h-full" />
+        </div>
+        <div>
+          <div class="flex items-center space-x-1">
+            <span class="font-medium">@u.UserName</span>
+            @if (u.IsVerified)
+            {
+              <svg xmlns="http://www.w3.org/2000/svg"
+                   class="w-4 h-4 text-blue-500"
+                   fill="currentColor"
+                   viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="12" />
+                <path fill="#fff" d="M10.2 14.7l-2-2a1 1 0 011.4-1.4l1.3 1.3 3.7-3.7a1 1 0 011.4 1.4l-4.4 4.4a1 1 0 01-1.4 0Z" />
+              </svg>
+            }
+          </div>
+        </div>
+      </a>
+    }
+  </div>
+</div>

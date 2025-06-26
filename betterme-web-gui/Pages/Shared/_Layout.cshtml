@@ -14,69 +14,140 @@
         }
         catch
         {
-            profileUserId = null;
         }
     }
 }
-
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>@ViewData["Title"] - betterme</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Bootstrap (for the offcanvas toggle behavior) -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/betterme_web_gui.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+          integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
 </head>
+<body class="bg-gray-100 text-gray-800">
 
-<body>
-    
-    <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
-        <div class="container-fluid d-flex align-items-center">
-            
-            <button class="btn btn-success me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
-                <i class="fa-solid fa-bars"></i>
-            </button>
+    <nav class="bg-white border-b shadow-sm">
+      <div class="container mx-auto px-4 py-3 flex items-center">
+        <!-- offcanvas toggle -->
+        <button class="text-2xl text-[#2ECC71] mr-4 focus:outline-none"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#mainOffcanvas">
+          <i class="fa-solid fa-bars"></i>
+        </button>
 
-            <img src="/Images/BetterMe-logo.png" class="img-fluid me-4" style="max-height: 40px;" alt="BetterMe logo">
+        <img src="/Images/BetterMe-logo.png"
+             alt="BetterMe logo"
+             class="h-10 mr-4" />
 
-            <a href="@(profileUserId is not null? $"/Profile/{profileUserId}": "/Login")"
-                class="btn btn-outline-secondary">
-                <i class="bi bi-person-circle"></i>
-                Perfil
-            </a>
-        </div>
+        <a href="@(profileUserId is not null 
+                      ? $"/Profile/{profileUserId}" 
+                      : "/Login")"
+           class="ml-auto inline-flex items-center space-x-1
+                  text-gray-700 hover:text-[#2ECC71]">
+          <i class="bi bi-person-circle text-xl"></i>
+          <span>Perfil</span>
+        </a>
+      </div>
     </nav>
 
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasMenuLabel">Menú</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
-        </div>
-        <div class="offcanvas-body">
-            <ul class="list-unstyled">
-                <li><a href="/UserInfo" class="nav-link">Perfil</a></li>
-                <li><a href="/Estatistics" class="nav-link">Estadísticas</a></li>
-                <li><a href="/Rutinas" class="nav-link">Rutinas</a></li>
-                <li><a href="/Progress" class="nav-link">Progreso</a></li>
-                <li><a href="/ProfileVerification/VerificationRequest" class="nav-link">Solicitar verificación</a></li>
-                <li><a href="/Logout" class="nav-link text-danger">Cerrar sesión</a></li>
-            </ul>
-        </div>
-    </div>
-    
-    <div class="container-fluid">
-        @RenderBody()
+    <!-- offcanvas -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mainOffcanvas">
+      <div class="offcanvas-header bg-[#2ECC71] text-white px-4 py-3 flex items-center justify-between">
+        <h5 class="text-lg font-semibold">Menú</h5>
+        <button type="button"
+                class="text-white text-2xl leading-none focus:outline-none"
+                data-bs-dismiss="offcanvas"
+                aria-label="Cerrar">
+          &times;
+        </button>
+      </div>
+      <div class="offcanvas-body p-4 bg-white">
+        <ul class="space-y-2">
+          <li>
+            <a href="/FeedMenu"
+               class="block px-4 py-2 rounded hover:bg-[#E6F9F0]
+                      text-gray-800 font-medium">
+              <i class="fa-solid fa-house mr-2 text-[#2ECC71]"></i>
+              Menu
+            </a>
+          </li>
+          <li>
+            <a href="@(profileUserId is not null 
+                         ? $"/Profile/{profileUserId}" 
+                         : "/Login")"
+               class="block px-4 py-2 rounded hover:bg-[#E6F9F0]
+                      text-gray-800 font-medium">
+              <i class="bi bi-person mr-2 text-[#2ECC71]"></i>
+              Perfil
+            </a>
+          </li>
+          <li>
+            <a href="/NewPost"
+               class="block px-4 py-2 rounded hover:bg-[#E6F9F0]
+                      text-gray-800 font-medium">
+              <i class="fa-solid fa-plus mr-2 text-[#2ECC71]"></i>
+              Crear post
+            </a>
+          </li>
+          <li>
+            <a href="/EditProfile"
+               class="block px-4 py-2 rounded hover:bg-[#E6F9F0]
+                      text-gray-800 font-medium">
+              <i class="fa-solid fa-pen mr-2 text-[#2ECC71]"></i>
+              Editar perfil
+            </a>
+          </li>
+          <li>
+            <a href="/SearchUsers"
+               class="block px-4 py-2 rounded hover:bg-[#E6F9F0]
+                      text-gray-800 font-medium">
+              <i class="fa-solid fa-magnifying-glass mr-2 text-[#2ECC71]"></i>
+              Buscar usuario
+            </a>
+          </li>
+          <li>
+            <a href="/ProfileVerification/VerificationRequest"
+               class="block px-4 py-2 rounded hover:bg-[#E6F9F0]
+                      text-gray-800 font-medium">
+              <i class="bi bi-patch-check-fill mr-2 text-[#2ECC71]"></i>
+              Solicitar verificación
+            </a>
+          </li>
+          <li>
+            <a href="/Logout"
+               class="block px-4 py-2 rounded hover:bg-red-100
+                      text-red-600 font-medium">
+              <i class="bi bi-box-arrow-right mr-2"></i>
+              Cerrar sesión
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
 
+    <div class="container mx-auto px-4 py-6">
+      @RenderBody()
+    </div>
+
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
