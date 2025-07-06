@@ -1,0 +1,122 @@
+﻿@page
+@model MyApp.Namespace.NewPostModel
+@{
+}
+
+<link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet" />
+
+
+<link
+  href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css"
+  rel="stylesheet"
+/>
+<script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
+<script src="https://unpkg.com/filepond/dist/filepond.js"></script>
+
+<div class="container mx-auto max-w-lg py-8 px-4">
+  <h2 class="text-3xl font-bold text-center mb-8">Crear nueva publicación</h2>
+
+  <form id="createPostForm"
+        method="post"
+        enctype="multipart/form-data"
+        class="space-y-8">
+
+    <!-- Title -->
+    <div class="space-y-2">
+      <label for="title" class="block text-center text-lg font-semibold">Título</label>
+      <div class="flex justify-center">
+        <input
+          id="title"
+          name="title"
+          type="text"
+          placeholder="Maleficios del Yoga Pt 3"
+          class="w-full max-w-md border rounded px-3 py-2"
+        />
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="space-y-2">
+      <label for="description" class="block text-center text-lg font-semibold">Descripción</label>
+      <div class="flex justify-center">
+        <textarea
+          id="description"
+          name="description"
+          rows="6"
+          placeholder="Lorem ipsum dolor sit amet…"
+          class="w-full max-w-md border rounded px-7 py-2 resize-none"
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- Category -->
+    <div class="space-y-2">
+      <legend class="block text-center text-lg font-semibold">Categoría</legend>
+      <div class="flex justify-center space-x-4">
+        <label class="inline-flex items-center space-x-1">
+          <input type="radio" name="category" value="Alimentación" checked class="form-radio"/>
+          <span>Alimentación</span>
+        </label>
+        <label class="inline-flex items-center space-x-1">
+          <input type="radio" name="category" value="Ejercicio" class="form-radio"/>
+          <span>Ejercicio</span>
+        </label>
+        <label class="inline-flex items-center space-x-1">
+          <input type="radio" name="category" value="Medicina" class="form-radio"/>
+          <span>Medicina</span>
+        </label>
+        <label class="inline-flex items-center space-x-1">
+          <input type="radio" name="category" value="Salud" class="form-radio"/>
+          <span>Salud</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- File Upload -->
+    <div class="mb-6">
+      <label for="fileUpload" class="block text-center font-semibold mb-2">Contenido</label>
+      <input
+        type="file"
+        id="fileUpload"
+        name="fileUpload"              
+        accept="image/png, image/jpeg"
+        class="mx-auto block"
+      />
+      <div id="previewContainer" class="mt-4 flex justify-center"></div>
+    </div>
+
+    <!-- Submit -->
+    <div class="text-center">
+      <button
+        type="submit"
+        class="bg-gray-800 text-white px-6 py-2 rounded hover:bg-gray-700"
+      >
+        Publicar
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  document
+    .getElementById('fileUpload')
+    .addEventListener('change', function (evt) {
+      const file = evt.target.files[0];
+      if (!file) return;
+      if (!['image/jpeg','image/png'].includes(file.type)) {
+        alert('Solo jpeg/png');
+        evt.target.value = '';
+        return;
+      }
+      const img = document.createElement('img');
+      img.classList.add('max-w-xs','rounded','shadow');
+      img.file = file;
+      document.getElementById('previewContainer').innerHTML = '';
+      document.getElementById('previewContainer').appendChild(img);
+
+      const reader = new FileReader();
+      reader.onload = (e) => (img.src = e.target.result);
+      reader.readAsDataURL(file);
+    });
+</script>

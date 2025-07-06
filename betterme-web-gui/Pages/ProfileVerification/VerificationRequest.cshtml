@@ -1,0 +1,69 @@
+@page
+@model betterme_web_gui.Pages.ProfileVerification.VerificationRequestModel
+@{
+    Layout = "_Layout";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-5 col-md-8 col-sm-10 col-xs-12">
+        <div class="vstack gap-4">
+            <div class="col text-center fs-2 fw-bold">
+                <p class="h2">Solicitar verificación de perfil</p>
+            </div>
+
+            <div class="card mb-3" style="border: solid #00531A;">
+                <div class="card-header fw-bold betterme-primary">Información importante</div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Manda un documento que avale la experiencia que tienes en algún tema específico del área de la salud.
+                        Un moderador de la plataforma se encargará de evaluar la solicitud y te avisaremos por correo el resultado.
+                    </p>
+                </div>
+            </div>
+                         
+            <form class="vstack gap-2 needs-validation" id="verificationRequestForm" novalidate enctype="multipart/form-data">
+                <div class="mb-3" >
+                    <label for="identification" class="form-label fw-bold">Identificación oficial:</label>
+                    <p class="fw-light">
+                        Se acepta credencial para votar, cartilla militar, pasaporte o credencial de conductor.
+                        El archivo debe tener la extensión .jpg, .jpeg o .png
+                    </p>
+                    <input class="form-control" type="file" id="identification" name="identification" accept=".jpg, .jpeg, .png" required>
+                    <div class="invalid-feedback">Es obligatorio subir una identificación</div>
+                </div>
+                <div class="mb-3">
+                    <label for="certificate" class="form-label fw-bold">Documento probatorio:</label>
+                    <p class="fw-light">
+                        Se acepta titulo universitario, certificado de curso o constancia emitidos por una institución reconocida.
+                        El archivo debe tener la extensión .pdf
+                    </p>
+                    <input class="form-control" type="file" id="certificate" name="certificate" accept=".jpg, .jpeg, .png" required>
+                    <div class="invalid-feedback">Es obligatorio subir un documento probatorio</div>
+                </div>
+                <div class="row justify-content-center p-3">
+                    <button type="submit" class="btn btn-primary betterme-bg" style="max-width: 150px;">Enviar solicitud</button>
+                </div>
+            </form>
+
+        </div>    
+    </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+
+    <div id="notification" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong id='title' class="me-auto"></strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div id='message' class="toast-body"></div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script src="~/js/verificationRequest.js" asp-append-version="true"></script>    
+}
+
+
+

@@ -1,0 +1,79 @@
+﻿@page
+@model MyApp.Namespace.FeedMenuModel
+@{
+}
+
+<style>
+  .categories-container {
+    display: flex;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+
+  .category-panel {
+    flex: 1;                     
+    position: relative;
+    background-size: cover;      
+    background-position: center; 
+    cursor: pointer;
+    transition: filter .2s ease;
+  }
+  .category-panel:hover {
+    filter: brightness(0.85);
+  }
+
+  .category-panel .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .category-panel .overlay h2 {
+    color: white;
+    font-size: 2rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+</style>
+
+<div class="categories-container">
+  <a asp-page="/FeedEjercicio"
+     asp-route-category="Alimentación"
+     class="category-panel"
+     style="background-image:url('/images/food.jpg')">
+    <div class="overlay">
+      <h2>Alimentacion</h2>
+    </div>
+  </a>
+
+  <a asp-page="/FeedEjercicio"
+     asp-route-category="Ejercicio"
+     class="category-panel"
+     style="background-image:url('/images/exercise.jpg')">
+    <div class="overlay">
+      <h2>Ejercicio</h2>
+    </div>
+  </a>
+
+  <a asp-page="/FeedEjercicio"
+     asp-route-category="Salud"
+     class="category-panel"
+     style="background-image:url('/images/health.jpg')">
+    <div class="overlay">
+      <h2>Salud</h2>
+    </div>
+  </a>
+
+  <a asp-page="/FeedEjercicio"
+     asp-route-category="Medicina"
+     class="category-panel"
+     style="background-image:url('/images/medicine.jpg')">
+    <div class="overlay">
+      <h2>Medicina</h2>
+    </div>
+  </a>
+</div>
